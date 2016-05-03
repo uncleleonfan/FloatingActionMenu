@@ -27,7 +27,6 @@
         android:layout_height="match_parent"
         android:layout_marginTop="?actionBarSize">
     </android.support.v7.widget.RecyclerView>
-
     <com.leon.floatingactionmenu.widget.FloatingActionMenu
         android:id="@+id/fab_menu"
         android:layout_width="wrap_content"
@@ -62,5 +61,6 @@
             android:src="@drawable/ic_add_white"
             app:backgroundTint="@color/colorPrimary" />
     </com.leon.floatingactionmenu.widget.FloatingActionMenu>
+
 
 </android.support.design.widget.CoordinatorLayout>

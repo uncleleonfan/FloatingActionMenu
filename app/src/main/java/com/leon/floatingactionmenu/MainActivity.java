@@ -3,7 +3,6 @@ package com.leon.floatingactionmenu;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,12 +10,10 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.leon.floatingactionmenu.widget.FloatingActionMenu;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,6 +30,14 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(new ListAdapter(this));
+
+        FloatingActionMenu floatingActionMenu = (FloatingActionMenu) findViewById(R.id.fab_menu);
+        floatingActionMenu.setOnMenuItemClickListener(new FloatingActionMenu.OnMenuItemClickListener() {
+            @Override
+            public void onMenuItemClick(FloatingActionButton fab) {
+                Toast.makeText(MainActivity.this, "OnMenuItemClick", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
