@@ -21,7 +21,12 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?actionBarSize">
+    </android.support.v7.widget.RecyclerView>
 
     <com.leon.floatingactionmenu.widget.FloatingActionMenu
         android:id="@+id/fab_menu"
