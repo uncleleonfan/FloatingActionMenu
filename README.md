@@ -55,7 +55,7 @@ FloatingActionMenu's inner class Behavior implements CoordinatorLayout.Behavior<
 
 * Behavior
 
-	You should give FloatingActionMenu a scroll behavior in xml if you want it react to a RecyclerView. You can just create a class extends Behavior.
+	You should give FloatingActionMenu a scroll behavior in xml if you want it react to a RecyclerView. You can just create a class extends Behavior and apply it to layout_behavior attribute.
 
 	```java
 	public class ScrollBehavior extends FloatingActionMenu.Behavior {
@@ -67,7 +67,7 @@ FloatingActionMenu's inner class Behavior implements CoordinatorLayout.Behavior<
 	```
 * Listeners
 
-	You can set listeners to listener FloatingActionButton Click event.
+	You can set listener for listening FloatingActionButton click event.
 	```java
 	FloatingActionMenu floatingActionMenu = (FloatingActionMenu) findViewById(R.id.fab_menu);
         floatingActionMenu.setOnMenuItemClickListener(new FloatingActionMenu.OnMenuItemClickListener() {
