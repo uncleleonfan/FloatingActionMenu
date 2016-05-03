@@ -1,10 +1,14 @@
 # FloatingActionMenu
 FloatingActionMenu is a custom widget which manipulate multiple FloatingActionButtons from support design libs.
+
 ## Expand ##
 FloatingActionMenu expands its FloatingActionButtons with default OvershootInterpolator, and create a dim white background.
+
 ![](img/expand.jpg)
+
 ## Scroll with RecyclerView ##
 FloatingActionMenu's inner class Behavior implements CoordinatorLayout.Behavior<FloatingActionMenu>, it dectects RecyclerView scroll events by default. 
+
 ![](img/scroll.jpg)
 
 ## Usage ##
