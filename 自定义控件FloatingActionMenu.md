@@ -1,11 +1,11 @@
 # 自定义控件FloatingActionMenu #
 在谷歌 Material Design support 包里面有一个控件叫作FloatingActionButton, 它通常停浮在屏幕右下角，能够直接的响应用户的动作，非常的实用与美观。
 
-![](floatingactionbutton.jpg)
+![](img/floatingactionbutton.jpg)
 
 但是如果你想使用多个FloatingActionButton,比如你想实现类似知乎的效果：
 
-![](zhihu.jpg)
+![](img/zhihu.jpg)
 
 那你需要在布局文件中添加三个FloatingActionButton, 两个小的一个大的，并且还要处理每个FloatingActionButton的动画和对应RecyclerView的滚动（隐藏或者显示），这些代码如果放在Activity里面会让Activity显得臃肿，缺乏复用性，最好的办法就是自定义一个ViewGroup,专门管理多个FloatingActionButton,在这样的背景下，FloatingActionMenu就应运而生。
 
