@@ -222,35 +222,37 @@
 * FloatingActionMenu展开时添加背景
 
 	1. 初始化背景
-	```java
-	//构造函数里面添加初始化函数init()
-		public FloatingActionMenu(Context context, AttributeSet attrs, int defStyleAttr) {
-	        super(context, attrs, defStyleAttr);
-	        init();
-	    }
+
+		```java
+		//构造函数里面添加初始化函数init()
+			public FloatingActionMenu(Context context, AttributeSet attrs, int defStyleAttr) {
+		        super(context, attrs, defStyleAttr);
+		        init();
+		    }
+			
+			//初始化插值器和调用initCover初始化背景
+			private void init() {
+		        mOvershootInterpolator = new OvershootInterpolator();
+		        mAccelerateInterpolator = new AccelerateInterpolator();
+		        initCover();
+		    }
 		
-		//初始化插值器和调用initCover初始化背景
-		private void init() {
-	        mOvershootInterpolator = new OvershootInterpolator();
-	        mAccelerateInterpolator = new AccelerateInterpolator();
-	        initCover();
-	    }
-	
-	    // 初始化FloatingActionMenu展开后的背景
-	    private void initCover() {
-	        mCover = new View(getContext());//创建背景View
-	        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-	        layoutParams.gravity = Gravity.CENTER;
-	        mCover.setLayoutParams(layoutParams);
-	        mCover.setBackgroundColor(Color.WHITE);//设置背景颜色为白色
-	        mCover.setOnClickListener(mOnCoverClickListener);//设置监听，当用户点击背景时, 让FloatingActionMenu收缩
-	        mCover.setAlpha(0f);//初始化时是全透明
-	    }
-		
+		    // 初始化FloatingActionMenu展开后的背景
+		    private void initCover() {
+		        mCover = new View(getContext());//创建背景View
+		        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		        layoutParams.gravity = Gravity.CENTER;
+		        mCover.setLayoutParams(layoutParams);
+		        mCover.setBackgroundColor(Color.WHITE);//设置背景颜色为白色
+		        mCover.setOnClickListener(mOnCoverClickListener);//设置监听，当用户点击背景时, 让FloatingActionMenu收缩
+		        mCover.setAlpha(0f);//初始化时是全透明
+		    }
 		```
+
 	2. 添加背景到布局
 
 		在expand()函数里面，通过addView(mCover, 0);将背景View作为FloatingActionMenu的第一个孩子孩子添加进去，这时候也会触发FloatingActionMenu的重新布局，可以将requestLayout的方法注释掉
+
 	3. 背景动画
 	
 		在onLayout方法里面，当是展开的情况时，给背景添加一个属性动画
@@ -263,6 +265,7 @@
 	            mCover.animate().alpha(0.7f).setDuration(DEFAULT_ANIMATION_DURATION).setListener(mExpandAlphaAnimationListener).start();
 	        }
 	```
+
 * 点击背景，收缩展开的FloatingActionMenu
 	
 	在初始化背景View的时候，我们给它设置了点击监听，当点击的背景的时候，会触发toggle函数的调用，由于此时mExpanding是为true，也即展开的状态，那么在toggle()
@@ -467,18 +470,21 @@
 	当用户点击某个FloatingActionButton时，FloatingActionMenu可以告诉外界用户点击了哪个FloatingActionButton
 
 	1. 创建接口回调
+
 		```java
 	    public interface OnMenuItemClickListener {
 	        void onMenuItemClick(FloatingActionButton fab);
 	    }		
 		```
 	2. 设置接口对象
+
 	    ```java
 	    public void setOnMenuItemClickListener(OnMenuItemClickListener l) {
 	        mOnMenuItemClickListener = l;
 	    }		
 		```
 	3. 在点击FloatingActionButton时调用回调接口函数
+
 	    初始化事件的时候，给每个FloatingAcitonButton设置监听为FloatingActionMenu本身
 		```java
 	    private void initEvent() {
