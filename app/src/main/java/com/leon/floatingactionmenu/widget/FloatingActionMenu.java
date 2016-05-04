@@ -36,10 +36,7 @@ public class FloatingActionMenu extends FrameLayout implements View.OnClickListe
     private OvershootInterpolator mOvershootInterpolator;
     private AccelerateInterpolator mAccelerateInterpolator;
 
-    private int mHorizontalGravity = -1;
-
     private int mExpandChildRightMargin = -1;
-    private int mExpandChildLeftMargin = -1;
     private int mExpandChildBottomMargin = -1;
     private int mTranslationY = -1;
 
@@ -125,16 +122,23 @@ public class FloatingActionMenu extends FrameLayout implements View.OnClickListe
     }
 
     private void expand() {
-        Log.d(TAG, "expand: ");
+        //在xml里面的布局参数，FloatingActionMenu的宽高是wrap_content,要想展开FloatingActionMenu的话，则必须调整它的宽高，
+        //让他们match_parent
         CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) getLayoutParams();
         layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
         layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
 
+        //获取主FloatingActionButton(带“+”号的)的布局参数
         LayoutParams primaryLayoutParams = (LayoutParams) mPrimaryButton.getLayoutParams();
-
+        //遍历所有的FloatingActionButton
         for (int i = 0; i < getChildCount(); i ++) {
+            //由于所有的FloatingActionButton在xml里面的layout_gravity都是center，所以当FloatingActionMenu的
+            //布局变成match_parent的时候，所有的FloatingActionButton都居中显示，为了让它们保持在屏幕右下角，所以
+            //设置所有的FloatingActionButton的gravity为FloatingActionMenu的gravity,即"bottom|end"
             LayoutParams childLayoutParams = (LayoutParams) getChildAt(i).getLayoutParams();
             childLayoutParams.gravity = layoutParams.gravity;
+
+            //遍历所有小的FloatingActionButton, 设置它们的rightMargin和bottomMargin，让它们摆在主FloatingActionButton的正中心
             if (i != getChildCount() -1) {
                 if (mExpandChildRightMargin < 0) {
                     mExpandChildRightMargin = primaryLayoutParams.rightMargin
@@ -149,8 +153,10 @@ public class FloatingActionMenu extends FrameLayout implements View.OnClickListe
             }
         }
 
+        //requestLayout();触发重新布局
         addView(mCover, 0);
 
+        //更新展开和收缩标记
         mExpanding = true;
         mCollapsing = false;
     }
