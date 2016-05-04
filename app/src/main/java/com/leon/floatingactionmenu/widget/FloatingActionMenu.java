@@ -189,7 +189,7 @@ public class FloatingActionMenu extends FrameLayout implements View.OnClickListe
             //背景透明度动画
             mCover.animate().alpha(0.7f).setDuration(DEFAULT_ANIMATION_DURATION).setListener(mExpandAlphaAnimationListener).start();
             int totalFabHeight = 0;//记录弹出FloatingActionButton的本身高度的和(不包括间隔)
-            //弹出所以小的FloatingActionButton
+            //弹出所有小的FloatingActionButton
             for (int i = 1; i < getChildCount() - 1; i ++ ) {
                 FloatingActionButton fab = (FloatingActionButton) getChildAt(i);
                 fab.setVisibility(VISIBLE);

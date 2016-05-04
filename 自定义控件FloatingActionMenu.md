@@ -102,6 +102,7 @@
 
 * 点击大的FloatingActionButton,弹出小的FloatingActionButton
 	1. 设置带"+"的FloatingActionButton的点击事件
+
 		```java
 			@Override
 		    protected void onAttachedToWindow() {
@@ -137,6 +138,7 @@
 			
 		```
 	2. 调整布局
+
 		```java
 		    private void expand() {
 		        //在xml里面的布局参数，FloatingActionMenu的宽高是wrap_content,要想展开FloatingActionMenu的话，则必须调整它的宽高，
@@ -178,6 +180,7 @@
 		    }
 		```
 	3. 动画弹出FloatingActionButton
+
 	   ```java
 	    /**
 	     * 在collapse()和expand()会触发FloatingActionMenu的重新布局，继而会回调onLayout方法
@@ -189,7 +192,7 @@
 	        //当触发回调是由于要展开FloatingActionMenu时
 	        if (mExpanding) {
 	            int totalFabHeight = 0;//记录弹出FloatingActionButton的本身高度的和(不包括间隔)
-	            //弹出所以小的FloatingActionButton
+	            //弹出所有小的FloatingActionButton
 	            for (int i = 1; i < getChildCount() - 1; i ++ ) {
 	                FloatingActionButton fab = (FloatingActionButton) getChildAt(i);
 	                fab.setVisibility(VISIBLE);
@@ -217,49 +220,48 @@
 	    }
 	   ```
 * FloatingActionMenu展开时添加背景
-	1. 初始化背景
 
+	1. 初始化背景
 	```java
 	//构造函数里面添加初始化函数init()
-	public FloatingActionMenu(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init();
-    }
+		public FloatingActionMenu(Context context, AttributeSet attrs, int defStyleAttr) {
+	        super(context, attrs, defStyleAttr);
+	        init();
+	    }
+		
+		//初始化插值器和调用initCover初始化背景
+		private void init() {
+	        mOvershootInterpolator = new OvershootInterpolator();
+	        mAccelerateInterpolator = new AccelerateInterpolator();
+	        initCover();
+	    }
 	
-	//初始化插值器和调用initCover初始化背景
-	private void init() {
-        mOvershootInterpolator = new OvershootInterpolator();
-        mAccelerateInterpolator = new AccelerateInterpolator();
-        initCover();
-    }
+	    // 初始化FloatingActionMenu展开后的背景
+	    private void initCover() {
+	        mCover = new View(getContext());//创建背景View
+	        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+	        layoutParams.gravity = Gravity.CENTER;
+	        mCover.setLayoutParams(layoutParams);
+	        mCover.setBackgroundColor(Color.WHITE);//设置背景颜色为白色
+	        mCover.setOnClickListener(mOnCoverClickListener);//设置监听，当用户点击背景时, 让FloatingActionMenu收缩
+	        mCover.setAlpha(0f);//初始化时是全透明
+	    }
+		
+		```
+	2. 添加背景到布局
 
-    // 初始化FloatingActionMenu展开后的背景
-    private void initCover() {
-        mCover = new View(getContext());//创建背景View
-        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        layoutParams.gravity = Gravity.CENTER;
-        mCover.setLayoutParams(layoutParams);
-        mCover.setBackgroundColor(Color.WHITE);//设置背景颜色为白色
-        mCover.setOnClickListener(mOnCoverClickListener);//设置监听，当用户点击背景时, 让FloatingActionMenu收缩
-        mCover.setAlpha(0f);//初始化时是全透明
-    }
-
-	```
-
-	2.添加背景到布局
-
-	在expand()函数里面，通过addView(mCover, 0);将背景View作为FloatingActionMenu的第一个孩子孩子添加进去，这时候也会触发FloatingActionMenu的重新布局，可以将requestLayout的方法注释掉
+		在expand()函数里面，通过addView(mCover, 0);将背景View作为FloatingActionMenu的第一个孩子孩子添加进去，这时候也会触发FloatingActionMenu的重新布局，可以将requestLayout的方法注释掉
+	3. 背景动画
 	
-	3.背景动画
-	在onLayout方法里面，当是展开的情况时，给背景添加一个属性动画
-	```java
-	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        //当触发回调是由于要展开FloatingActionMenu时
-        if (mExpanding) {
-            //背景透明度动画, 从0到0.7f的变化
-            mCover.animate().alpha(0.7f).setDuration(DEFAULT_ANIMATION_DURATION).setListener(mExpandAlphaAnimationListener).start();
-        }
+		在onLayout方法里面，当是展开的情况时，给背景添加一个属性动画
+		```java
+		protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+	        super.onLayout(changed, left, top, right, bottom);
+	        //当触发回调是由于要展开FloatingActionMenu时
+	        if (mExpanding) {
+	            //背景透明度动画, 从0到0.7f的变化
+	            mCover.animate().alpha(0.7f).setDuration(DEFAULT_ANIMATION_DURATION).setListener(mExpandAlphaAnimationListener).start();
+	        }
 	```
 * 点击背景，收缩展开的FloatingActionMenu
 	
@@ -351,117 +353,115 @@
 
 	1. 创建Behavior
 		
-	FloatingActionMenu里面放置在CoordinateLayout里面，CoordinateLayout能够协调子View的滚动，当一个子View滚动时，可以将这个View的滚动
-	事件告诉给其他的子View。 如果我们要实现根据CoordinateLayout里面的RecyclerView的滚动来控制FloatingActionMenu的滚动该怎么做呢？
-	我们需要去实现一个Behavior：
-	
-	```java
-    //创建Behavior继承自CoordinatorLayout.Behavior
-	    public static class Behavior extends CoordinatorLayout.Behavior<FloatingActionMenu> {
-	
-	        private boolean mScrollDown = false;
-	
-	        /**
-	         *
-	         * @param parent 即CoordinatorLayout
-	         * @param child 即FloatingActionMenu
-	         * @param dependency FloatingActionMenu想要依赖的View,即FloatingActionMenu想要获取这个view的滚动事件
-	         *
-	         * @return true，表示依赖View dependency
-	         */
-	        @Override
-	        public boolean layoutDependsOn(CoordinatorLayout parent, FloatingActionMenu child, View dependency) {
-	            //如果依赖的view是一个RecyclerView，则返回true,表示想要监听RecyclerView的滚动事件
-	            return dependency instanceof RecyclerView;
-	        }
-	
-	        /**
-	         * 由于在上一个函数layoutDependsOn里面我们要监听RecyclerView，当RecyclerView开始滚动的时候，会回调
-	         * onStartNestedScroll(), 返回true表示确认继续接受滚动事件
-	         */
-	        @Override
-	        public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionMenu child,
-	                                           View directTargetChild, View target, int nestedScrollAxes) {
-	            //当RecyclerView是竖直方向发生滚动时，返回true，表示只接受竖直方向的滚动事件
-	            return nestedScrollAxes == ViewCompat.SCROLL_AXIS_VERTICAL;
-	        }
-	
-	        /**
-	         * 当上一函数onStartNestedScroll返回true时，RecyclerView发生滚动会继续回调onNestedScroll，这里我们
-	         * 根据RecyclerView的滚动来操纵FloatingActionMenu的滚动
-	         */
-	        @Override
-	        public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionMenu child,
-	                                   View target, int dxConsumed, int dyConsumed, int dxUnconsumed,
-	                                   int dyUnconsumed) {
-	            //记录RecyclerView是否向下滚动，dyConsumed表示RecyclerView滚动的距离，dyConsumed>0表示向下滚动
-	            mScrollDown = dyConsumed > 0;
-	
-	            //计算FloatingActionMenu在Y轴上的偏移量
-	            float translationY = child.getTranslationY() + dyConsumed;
-	            //把FloatingActionMenu的偏移量控制在0到刚好滚出屏幕的距离之间
-	            if (0 < translationY && translationY < child.getMaxTranslationY()) {
-	                //设置FloatingActionMenu在Y轴上的偏移量
-	                child.setTranslationY(translationY);
-	            }
-	        }
-	
-	        /**
-	         * 当RecyclerView停止滚动时的回调，当RecyclerView停止滚动时，FloatingActionMenu要么恢复到初始的位置，要么滚动屏幕
-	         */
-	        @Override
-	        public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionMenu child, View target) {
-	            //当RecyclerView是向下滚动后停止
-	            if (mScrollDown) {
-	                //让FloatingActionMenu恰好滚出屏幕
-	                ViewCompat.animate(child).translationY(child.getMaxTranslationY())
-	                        .setInterpolator(new LinearInterpolator()).start();
-	            } else {
-	                //当RecyclerView是向上滚动后停止，让FloatingActionMenu恢复到初始位置
-	                ViewCompat.animate(child).translationY(0)
-	                        .setInterpolator(new LinearInterpolator()).start();
-	            }
-	        }
-	    }
-	
-	    /**
-	     * 获取FloatingActionMenu滚出屏幕需要的最大的Y轴上的偏移量
-	     */
-	    private int getMaxTranslationY() {
-	        if (mTranslationY < 0) {
-	            CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) getLayoutParams();
-	            //最大的偏移量为FloatingActionMenu的底部的margin加上它本身的高度
-	            mTranslationY = layoutParams.bottomMargin + getHeight();
-	        }
-	        return mTranslationY;
-	    }
-
-	```
-
-	2.使用Behavior
-	
-	要使用Behavior,我们需要再去创建一个类继承我们创建的Behavior的类：
-
-	```java
-		public class ScrollBehavior extends FloatingActionMenu.Behavior {
+		FloatingActionMenu里面放置在CoordinateLayout里面，CoordinateLayout能够协调子View的滚动，当一个子View滚动时，可以将这个View的滚动
+		事件告诉给其他的子View。 如果我们要实现根据CoordinateLayout里面的RecyclerView的滚动来控制FloatingActionMenu的滚动该怎么做呢？
+		我们需要去实现一个Behavior：
+		```java
+	    //创建Behavior继承自CoordinatorLayout.Behavior
+		    public static class Behavior extends CoordinatorLayout.Behavior<FloatingActionMenu> {
 		
-		    public ScrollBehavior(Context context, AttributeSet attributeSet) {
-		        super();
+		        private boolean mScrollDown = false;
+		
+		        /**
+		         *
+		         * @param parent 即CoordinatorLayout
+		         * @param child 即FloatingActionMenu
+		         * @param dependency FloatingActionMenu想要依赖的View,即FloatingActionMenu想要获取这个view的滚动事件
+		         *
+		         * @return true，表示依赖View dependency
+		         */
+		        @Override
+		        public boolean layoutDependsOn(CoordinatorLayout parent, FloatingActionMenu child, View dependency) {
+		            //如果依赖的view是一个RecyclerView，则返回true,表示想要监听RecyclerView的滚动事件
+		            return dependency instanceof RecyclerView;
+		        }
+		
+		        /**
+		         * 由于在上一个函数layoutDependsOn里面我们要监听RecyclerView，当RecyclerView开始滚动的时候，会回调
+		         * onStartNestedScroll(), 返回true表示确认继续接受滚动事件
+		         */
+		        @Override
+		        public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionMenu child,
+		                                           View directTargetChild, View target, int nestedScrollAxes) {
+		            //当RecyclerView是竖直方向发生滚动时，返回true，表示只接受竖直方向的滚动事件
+		            return nestedScrollAxes == ViewCompat.SCROLL_AXIS_VERTICAL;
+		        }
+		
+		        /**
+		         * 当上一函数onStartNestedScroll返回true时，RecyclerView发生滚动会继续回调onNestedScroll，这里我们
+		         * 根据RecyclerView的滚动来操纵FloatingActionMenu的滚动
+		         */
+		        @Override
+		        public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionMenu child,
+		                                   View target, int dxConsumed, int dyConsumed, int dxUnconsumed,
+		                                   int dyUnconsumed) {
+		            //记录RecyclerView是否向下滚动，dyConsumed表示RecyclerView滚动的距离，dyConsumed>0表示向下滚动
+		            mScrollDown = dyConsumed > 0;
+		
+		            //计算FloatingActionMenu在Y轴上的偏移量
+		            float translationY = child.getTranslationY() + dyConsumed;
+		            //把FloatingActionMenu的偏移量控制在0到刚好滚出屏幕的距离之间
+		            if (0 < translationY && translationY < child.getMaxTranslationY()) {
+		                //设置FloatingActionMenu在Y轴上的偏移量
+		                child.setTranslationY(translationY);
+		            }
+		        }
+		
+		        /**
+		         * 当RecyclerView停止滚动时的回调，当RecyclerView停止滚动时，FloatingActionMenu要么恢复到初始的位置，要么滚动屏幕
+		         */
+		        @Override
+		        public void onStopNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionMenu child, View target) {
+		            //当RecyclerView是向下滚动后停止
+		            if (mScrollDown) {
+		                //让FloatingActionMenu恰好滚出屏幕
+		                ViewCompat.animate(child).translationY(child.getMaxTranslationY())
+		                        .setInterpolator(new LinearInterpolator()).start();
+		            } else {
+		                //当RecyclerView是向上滚动后停止，让FloatingActionMenu恢复到初始位置
+		                ViewCompat.animate(child).translationY(0)
+		                        .setInterpolator(new LinearInterpolator()).start();
+		            }
+		        }
 		    }
-		}
+		
+		    /**
+		     * 获取FloatingActionMenu滚出屏幕需要的最大的Y轴上的偏移量
+		     */
+		    private int getMaxTranslationY() {
+		        if (mTranslationY < 0) {
+		            CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) getLayoutParams();
+		            //最大的偏移量为FloatingActionMenu的底部的margin加上它本身的高度
+		            mTranslationY = layoutParams.bottomMargin + getHeight();
+		        }
+		        return mTranslationY;
+		    }
+		```
 
-	```
-
-	并在布局中使用它
+	2. 使用Behavior
 	
-	```java
-		    <com.leon.floatingactionmenu.widget.FloatingActionMenu
-	        android:id="@+id/fab_menu"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_gravity="bottom|end"
-	        app:layout_behavior="com.leon.floatingactionmenu.behavior.ScrollBehavior">
-	```
+		要使用Behavior,我们需要再去创建一个类继承我们创建的Behavior的类：
+	
+		```java
+			public class ScrollBehavior extends FloatingActionMenu.Behavior {
+			
+			    public ScrollBehavior(Context context, AttributeSet attributeSet) {
+			        super();
+			    }
+			}
+	
+		```
+	
+		并在布局中使用它
+		
+		```java
+			    <com.leon.floatingactionmenu.widget.FloatingActionMenu
+		        android:id="@+id/fab_menu"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_gravity="bottom|end"
+		        app:layout_behavior="com.leon.floatingactionmenu.behavior.ScrollBehavior">
+		```
 
 * FloatingActionMenu点击的回调
 	当用户点击某个FloatingActionButton时，FloatingActionMenu可以告诉外界用户点击了哪个FloatingActionButton
