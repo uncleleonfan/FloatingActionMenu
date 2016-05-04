@@ -1,7 +1,7 @@
 # FloatingActionMenu
 FloatingActionMenu is a custom widget which manipulate multiple FloatingActionButtons from support design libs.
 
-For Chinese reader, you can checkout [自定义控件FloatingActionMenu]:/自定义控件FloatingActionMenu.md for code details.
+For Chinese reader, you can checkout [自定义控件FloatingActionMenu](https://github.com/uncleleonfan/FloatingActionMenu/blob/master/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8E%A7%E4%BB%B6FloatingActionMenu.md) for code details.
 
 ## Expand ##
 FloatingActionMenu expands its FloatingActionButtons with default OvershootInterpolator, and create a dim white background.
