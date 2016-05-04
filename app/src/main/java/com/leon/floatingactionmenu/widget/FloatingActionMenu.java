@@ -21,7 +21,9 @@ import android.widget.FrameLayout;
 /**
  * Created by Leon on 2016/4/7.
  */
-public class FloatingActionMenu extends FrameLayout implements View.OnClickListener{
+public class FloatingActionMenu extends FrameLayout implements View.OnClickListener {
+
+    private static final String TAG = "FloatingActionMenu";
 
     private boolean mExpanding = false;
     private boolean mCollapsing = false;
@@ -29,7 +31,6 @@ public class FloatingActionMenu extends FrameLayout implements View.OnClickListe
     private static final int DEFAULT_ANIMATION_DURATION = 200;
     private static final int DEFAULT_BUTTON_GAP = 50;
 
-    private static final String TAG = "FloatingActionMenu";
     private FloatingActionButton mPrimaryButton;
     private View mCover;
     private OvershootInterpolator mOvershootInterpolator;
@@ -62,8 +63,6 @@ public class FloatingActionMenu extends FrameLayout implements View.OnClickListe
         mOvershootInterpolator = new OvershootInterpolator();
         mAccelerateInterpolator = new AccelerateInterpolator();
         initCover();
-
-        setFocusableInTouchMode(true);
     }
 
     @Override
@@ -132,32 +131,16 @@ public class FloatingActionMenu extends FrameLayout implements View.OnClickListe
         layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
 
         LayoutParams primaryLayoutParams = (LayoutParams) mPrimaryButton.getLayoutParams();
-        if (mHorizontalGravity < 0) {
-            int layoutDirection = ViewCompat.getLayoutDirection(this);
-            int gravity = GravityCompat.getAbsoluteGravity(layoutParams.gravity, layoutDirection);
-            mHorizontalGravity = gravity & Gravity.HORIZONTAL_GRAVITY_MASK;
-        }
 
         for (int i = 0; i < getChildCount(); i ++) {
             LayoutParams childLayoutParams = (LayoutParams) getChildAt(i).getLayoutParams();
             childLayoutParams.gravity = layoutParams.gravity;
             if (i != getChildCount() -1) {
-                switch (mHorizontalGravity) {
-                    case Gravity.RIGHT:
-                        if (mExpandChildRightMargin < 0) {
-                            mExpandChildRightMargin = primaryLayoutParams.rightMargin
-                                    + mPrimaryButton.getWidth() /2 - getChildAt(i).getWidth() /2;
-                        }
-                        childLayoutParams.rightMargin = mExpandChildRightMargin;
-                        break;
-                    case Gravity.LEFT:
-                        if (mExpandChildLeftMargin < 0) {
-                            mExpandChildLeftMargin = primaryLayoutParams.leftMargin
-                                    + mPrimaryButton.getWidth() /2 - getChildAt(i).getWidth() /2;
-                        }
-                        childLayoutParams.leftMargin = mExpandChildLeftMargin;
-                        break;
+                if (mExpandChildRightMargin < 0) {
+                    mExpandChildRightMargin = primaryLayoutParams.rightMargin
+                            + mPrimaryButton.getWidth() /2 - getChildAt(i).getWidth() /2;
                 }
+                childLayoutParams.rightMargin = mExpandChildRightMargin;
                 if (mExpandChildBottomMargin < 0) {
                     mExpandChildBottomMargin = primaryLayoutParams.bottomMargin
                             + mPrimaryButton.getHeight() /2 - getChildAt(i).getHeight() /2;
